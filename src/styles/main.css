@@ -1,12 +1,34 @@
+/* ===================================
+   CONFIGURAÇÕES GERAIS & VARIÁVEIS
+   =================================== */
+:root {
+    /* Cores */
+    --primary-color: #7303c0;
+    --secondary-color: #ec38bc;
+    --bg-main: #fc1e8a;
+    --bg-dark: #03001e;
+    --card-back: #404040;
+    --text-light: #ffffff;
+    
+    /* Fontes e Efeitos */
+    --font-main: sans-serif;
+    --transition-speed: 0.25s;
+    --border-radius: 15px;
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #fc1e8a;
+    background: var(--bg-main);
     user-select: none;
+    font-family: var(--font-main);
 }
 
+/* ===================================
+   CONTAINER PRINCIPAL
+   =================================== */
 .container {
     position: relative;
     display: flex;
@@ -14,41 +36,63 @@ body {
     justify-content: center;
     align-items: center;
     gap: 30px;
+    padding: 40px 60px;
     background: linear-gradient(
         325deg,
-        #03001e 0%,
-        #7303c0 30%,
-        #ec38bc 70%,
+        var(--bg-dark) 0%,
+        var(--primary-color) 30%,
+        var(--secondary-color) 70%,
         #fdeff9 100%
     );
-    padding: 40px 60px;
 }
 
 h2 {
     font-size: 3em;
-    color: #fff;
+    color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+}
+
+/* ===================================
+   PAINEL DE STATUS & INTERFACE
+   =================================== */
+.status-panel {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: var(--text-light);
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: -10px;
+}
+
+.timer-low {
+    color: #ff0000;
+    animation: blink 0.5s infinite;
 }
 
 .reset {
-    padding: 15px 20px;
     width: 100%;
-    color: #000;
-    background-color: #fff;
+    padding: 15px 20px;
     border: none;
-    font-size: 1.5 em;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
+    background-color: var(--text-light);
+    color: #000;
+    font-size: 1.5em;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background var(--transition-speed);
 }
 
 .reset:focus {
-    color: #ec38bc;
+    color: var(--secondary-color);
     background-color: #262809;
 }
 
+/* ===================================
+   TABULEIRO E CARTAS (CORE DO JOGO)
+   =================================== */
 .game {
     width: 430px;
     height: 430px;
@@ -66,27 +110,84 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #fff;
+    background-color: var(--text-light);
     font-size: 4em;
     transform: rotateY(180deg);
-    transition: 0.25s;
+    transition: var(--transition-speed);
 }
 
+/* Camada traseira da carta (capa) */
 .item::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: #404040;
-    transition: 0.25s;
-    transform: rotateY(0deg);
+    background: var(--card-back);
     backface-visibility: hidden;
-    /*opacity: 0.85;*/
+    transform: rotateY(0deg);
+    transition: var(--transition-speed);
 }
 
+/* Estados de visualização da carta */
 .item.boxOpen {
     transform: rotateY(0deg);
 }
 
-.boxOpen::after, .boxMatch::after {
+.boxOpen::after, 
+.boxMatch::after {
     transform: rotateY(180deg);
+}
+
+/* ===================================
+   MODAIS E FEEDBACK
+   =================================== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: var(--text-light);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    max-width: 300px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+    color: var(--primary-color);
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* ===================================
+   ANIMAÇÕES E RESPONSIVIDADE
+   =================================== */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@media (max-width: 480px) {
+    .game {
+        width: 320px;
+        height: 320px;
+    }
+    .item {
+        width: 70px;
+        height: 70px;
+        font-size: 2.5em;
+    }
 }

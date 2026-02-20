@@ -12,11 +12,25 @@
 <body>
     <div class="container">
         <h2>JOGO DA MEMÓRIA</h2>
+
+        <div class="status-panel">
+            <p>Tempo Restante: <span id="timer">01:00</span></p>
+            <p>Jogadas: <span id="moves">0</span></p>
+        </div>
+
         <div class="game"></div>
         <button class="reset" onclick="window.location.reload()">RESET GAME</button>
     </div>
 
-    <script src="./src/scrripts/engine.js" defer></script>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">GAME OVER</h2>
+            <p id="modal-message">O tempo acabou!</p>
+            <button class="reset">JOGAR NOVAMENTE</button>
+        </div>
+    </div>
+
+    <script src="./src/scripts/engine.js" defer></script>
 </body>
 
 </html>
