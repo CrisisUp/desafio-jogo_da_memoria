@@ -35,5 +35,15 @@ export const UI = {
     updateMoves(value) {
         const element = document.getElementById("moves");
         if (element) element.innerText = value;
+    },
+
+    setupGrid(isHardMode) {
+        const gameContainer = document.querySelector(".game");
+        if (isHardMode) {
+            gameContainer.classList.add("hard-mode");
+        } else {
+            gameContainer.classList.remove("hard-mode");
+        }
+        gameContainer.innerHTML = ""; // Limpa o tabuleiro anterior
     }
 };

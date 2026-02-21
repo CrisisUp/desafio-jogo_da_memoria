@@ -14,6 +14,31 @@
     --font-main: sans-serif;
     --transition-speed: 0.25s;
     --border-radius: 15px;
+
+    /* Dimensões Fixas */
+    --card-size: 100px;
+    --grid-gap: 10px;
+
+    /* Espaçamentos e Dimensões */
+    --side-padding: 80px; 
+    --container-padding: 40px;
+    --card-border-radius: 8px;
+    --btn-border-radius: 10px;
+
+    /* Opacidades e Efeitos */
+    --card-opacity-normal: 0.85;
+    --card-opacity-hard: 0.6;
+    --card-bg-hard: rgba(255, 255, 255, 0.7);
+    --modal-overlay: rgba(0, 0, 0, 0.8);
+
+    /* Fontes Dinâmicas */
+    --font-size-card-normal: 4em;
+    --font-size-card-hard: 1.8em;
+    --font-size-title: 3em;
+    
+    /* Cálculos Automáticos para o entorno */
+    --width-4x4: calc((var(--card-size) * 4) + (var(--grid-gap) * 3) + var(--side-padding));
+    --width-6x6: calc((var(--card-size) * 6) + (var(--grid-gap) * 5) + var(--side-padding));
 }
 
 body {
@@ -35,8 +60,9 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 30px;
-    padding: 40px 60px;
+    gap: 20px;
+    padding: var(--container-padding);
+    width: var(--width-4x4);
     background: linear-gradient(
         325deg,
         var(--bg-dark) 0%,
@@ -44,13 +70,18 @@ body {
         var(--secondary-color) 70%,
         #fdeff9 100%
     );
+    /* Transição suave para os lados quando expandir */
+    transition: width 0.5s ease-in-out;
+    border-radius: var(--border-radius);
 }
 
 h2 {
-    font-size: 3em;
+    font-size: var(--font-size-title);
     color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    width: 100%; /* Ocupa a largura total do container expandido */
+    text-align: center;
 }
 
 /* ===================================
@@ -82,6 +113,7 @@ h2 {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     cursor: pointer;
+    border-radius: var(--btn-border-radius);
     transition: background var(--transition-speed);
 }
 
@@ -93,27 +125,38 @@ h2 {
 /* ===================================
    TABULEIRO E CARTAS (CORE DO JOGO)
    =================================== */
+
 .game {
-    width: 430px;
-    height: 430px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--grid-gap);
+    width: fit-content;
+    margin: 0 auto;
     transform-style: preserve-3d;
     perspective: 500px;
+    transition: all 0.5s ease-in-out;
+    opacity: 1;
+}
+
+/* Estado de transição (pode ser disparado via JS) */
+.game.transitioning {
+    opacity: 0;
+    transform: scale(0.9);
 }
 
 .item {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: var(--card-size);
+    height: var(--card-size);
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--text-light);
-    font-size: 4em;
+    font-size: var(--font-size-card-normal);
     transform: rotateY(180deg);
     transition: var(--transition-speed);
+    border-radius: var(--card-border-radius);
+    opacity: var(--card-opacity-normal);
 }
 
 /* Camada traseira da carta (capa) */
@@ -125,6 +168,8 @@ h2 {
     backface-visibility: hidden;
     transform: rotateY(0deg);
     transition: var(--transition-speed);
+    border-radius: var(--card-border-radius);
+    opacity: var(--card-opacity-normal);
 }
 
 /* Estados de visualização da carta */
@@ -135,6 +180,27 @@ h2 {
 .boxOpen::after, 
 .boxMatch::after {
     transform: rotateY(180deg);
+}
+
+/* Quando o Master for ativado, o entorno (container) se adapta */
+.container:has(.hard-mode) {
+    width: var(--width-6x6);
+}
+
+.game.hard-mode {
+    grid-template-columns: repeat(6, 1fr); 
+    width: fit-content; 
+}
+
+.game.hard-mode .item {
+    font-size: var(--font-size-card-hard);
+    background-color: var(--card-bg-hard); 
+    transition: transform 0.25s, opacity 0.25s;
+}
+
+.game.hard-mode .item.boxOpen, 
+.game.hard-mode .item.boxMatch {
+    opacity: 1; /* Fica opaco ao interagir */
 }
 
 /* ===================================
@@ -157,6 +223,7 @@ h2 {
     border-radius: var(--border-radius);
     text-align: center;
     max-width: 300px;
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -197,11 +264,11 @@ h2 {
     padding: 15px;
     margin: 10px 0;
     border: none;
-    border-radius: 5px;
     background-color: var(--primary-color);
     color: white;
     font-weight: bold;
     cursor: pointer;
+    border-radius: var(--btn-border-radius);
     transition: transform 0.2s;
 }
 

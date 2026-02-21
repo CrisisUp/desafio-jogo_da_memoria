@@ -6,9 +6,9 @@ Este é um projeto de Jogo da Memória desenvolvido com foco em Arquitetura Modu
 
 ### Dois Modos de Jogo
 
-* **Casual:** Cronômetro progressivo para prática livre.
+* **`Casual`:** Cronômetro progressivo para prática livre.
 
-* **Desafio:** Contagem regressiva de 60 segundos com sistema de Game Over.
+* **`Desafio`:** Contagem regressiva de 60 segundos com sistema de Game Over.
 
 ### Também
 
@@ -58,3 +58,28 @@ O projeto foi refatorado para seguir o princípio de Responsabilidade Única (SR
         ├── main.css     # Estilização e variáveis
         └── reset.css    # Normalização de estilos
 ```
+
+## 🌟 Diferenciais Técnicos (Desafio Master)
+
+### Sistema de Dificuldade Evolutiva
+
+O projeto conta com um gatilho de performance:
+
+* **Detecção de Velocidade:** Vitórias abaixo de 23s ativam o modo Master.
+  
+* **Injeção Dinâmica:** O `engine.js` alterna o set de emojis e reconstrói o DOM sem `window.location.reload()`.
+
+* **Cálculo de Grid:** O CSS adapta o entorno do tabuleiro dinamicamente (de 430px para 650px) para acomodar 36 cartas de 100px, preservando a experiência visual e proibindo barras de rolagem.
+
+### Variáveis e Design System
+
+* **Escalabilidade:** Todo o design é controlado via `:root`, permitindo ajustes globais de `border-radius`, `gap` e `opacity` em um único ponto.
+
+## 🛠️ Como Executar o Projeto
+
+Como o projeto utiliza **ES Modules** para manter a segurança de escopo e organização, ele não pode ser aberto diretamente pelo sistema de arquivos (`file://`).
+
+1. Certifique-se de ter o **`VS Code`** instalado.
+2. Instale a extensão **`Live Server`**.
+3. Clique com o botão direito no `index.html` e selecione **"Open with Live Server"**.
+4. O jogo abrirá em `http://127.0.0.1:5500`.
