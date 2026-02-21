@@ -191,3 +191,21 @@ h2 {
         font-size: 2.5em;
     }
 }
+
+.mode-btn {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.mode-btn:hover {
+    transform: scale(1.05);
+    background-color: var(--secondary-color);
+}

@@ -1,64 +1,60 @@
-(() => {
+import { Storage } from './storage.js';
+import { UI } from './ui.js';
 
-const emojis = [
-    "🍅", "🍅", "🥸", "🥸", "🥶", "🥶", "🤢", "🤢", "🙋🏻‍♂️", "🙋🏻‍♂️", "🙈", "🙈", "🥱", "🥱", "🤡", "🤡",
-];
-
+// ==========================================
+// 1. ESTADO E CONFIGURAÇÕES (Agora protegidos pelo módulo)
+// ==========================================
+const emojis = ["🍅", "🍅", "🥸", "🥸", "🥶", "🥶", "🤢", "🤢", "🙋🏻‍♂️", "🙋🏻‍♂️", "🙈", "🙈", "🥱", "🥱", "🤡", "🤡"];
 let openCards = [];
-let moves = 0;
-let seconds = 0;
-let timeLeft = 60; // Tempo inicial
 let timerInterval;
+let gameMode = "casual";
+let timeLeft = 60;
+let secondsPassed = 0;
+let moves = 0;
 
-let shuffleEmojis = emojis.sort(() => (Math.random() > 0.5 ? 2 : -1));
+// ==========================================
+// 2. INICIALIZAÇÃO
+// ==========================================
+const init = () => {
+    // Agora o engine.js não precisa saber como o dado é guardado, 
+    // ele apenas pede o valor formatado para o Storage.
+    const highScoreSpan = document.getElementById("high-score");
+    if (highScoreSpan) {
+        highScoreSpan.innerText = Storage.getFormattedRecord();
+    }
 
-for(let i = 0; i < emojis.length; i++) {
-    let box = document.createElement("div");
-    box.className = "item";
-    box.innerHTML = shuffleEmojis[i];
-    box.onclick = handleClick;
-    document.querySelector(".game").appendChild(box);
-}
-
-document.querySelector(".reset").addEventListener("click", () => {
-        window.location.reload();
+    const shuffleEmojis = emojis.sort(() => (Math.random() > 0.5 ? 2 : -1));
+    const gameContainer = document.querySelector(".game");
+    
+    shuffleEmojis.forEach((emoji) => {
+        let box = document.createElement("div");
+        box.className = "item";
+        box.innerHTML = emoji;
+        box.onclick = handleClick;
+        gameContainer.appendChild(box);
     });
 
-// Inicia a contagem regressiva na primeira jogada
-function startTimer() {
-    if (!timerInterval) {
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            
-            // Formatação para 00:00
-            const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const secs = (timeLeft % 60).toString().padStart(2, '0');
-            document.getElementById("timer").innerText = `${mins}:${secs}`;
+    setupEventListeners();
+};
 
-            if (timeLeft <= 10) {
-                timerElement.classList.add("timer-low");
-            }
+const setupEventListeners = () => {
+    document.getElementById("btn-casual").onclick = () => startGame("casual");
+    document.getElementById("btn-desafio").onclick = () => startGame("desafio");
+    document.querySelectorAll(".reset").forEach(button => {
+        button.onclick = () => window.location.reload();
+    });
+};
 
-            // Lógica de Game Over
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                gameOver();
-            }
-        }, 1000);
-    }
-}
+const startGame = (mode) => {
+    gameMode = mode;
+    document.getElementById("start-modal").style.display = "none";
+};
 
-function gameOver() {
-    // Bloqueia cliques em todas as cartas para o usuário não continuar jogando
-    const allCards = document.querySelectorAll(".item");
-    allCards.forEach(card => card.onclick = null);
-    
-    alert("GAME OVER! O tempo acabou. 💀");
-    // Opcional: window.location.reload();
-}
-
+// ==========================================
+// 3. MECÂNICA DO JOGO
+// ==========================================
 function handleClick() {
-    startTimer(); // Começa a contar no primeiro clique
+    startTimer();
 
     if (openCards.length < 2 && !this.classList.contains("boxOpen") && !this.classList.contains("boxMatch")) {
         this.classList.add("boxOpen");
@@ -66,49 +62,74 @@ function handleClick() {
     }
 
     if (openCards.length === 2) {
-        moves++; // Incrementa a jogada
+        moves++;
         document.getElementById("moves").innerText = moves;
         setTimeout(checkMatch, 500);
     }
-
-    console.log(openCards);
 }
 
 function checkMatch() {
-    if (openCards[0].innerHTML === openCards[1].innerHTML) {
-        openCards[0].classList.add("boxMatch");
-        openCards[1].classList.add("boxMatch");
+    const [card1, card2] = openCards;
+
+    if (card1.innerHTML === card2.innerHTML) {
+        card1.classList.add("boxMatch");
+        card2.classList.add("boxMatch");
     } else {
-        openCards[0].classList.remove("boxOpen");
-        openCards[1].classList.remove("boxOpen");
+        card1.classList.remove("boxOpen");
+        card2.classList.remove("boxOpen");
     }
 
     openCards = [];
+    checkWin();
+}
 
-    // Verificação de Vitória
+// ==========================================
+// 4. TEMPO E STATUS
+// ==========================================
+function startTimer() {
+    if (timerInterval) return;
+
+    timerInterval = setInterval(() => {
+        if (gameMode === "desafio") {
+            timeLeft--;
+            renderTime(timeLeft);
+            if (timeLeft <= 10) document.getElementById("timer").classList.add("timer-low");
+            if (timeLeft <= 0) endGame(false);
+        } else {
+            secondsPassed++;
+            renderTime(secondsPassed);
+        }
+    }, 1000);
+}
+
+// ==========================================
+// 5. FINALIZAÇÃO
+// ==========================================
+function checkWin() {
     if (document.querySelectorAll(".boxMatch").length === emojis.length) {
-        clearInterval(timerInterval);
-        alert(`VITÓRIA! Sobrou ${timeLeft} segundos.`);
+        endGame(true);
     }
 }
 
-function showModal(title, message) {
-    document.getElementById("modal-title").innerText = title;
-    document.getElementById("modal-message").innerText = message;
-    document.getElementById("modal").style.display = "flex";
-}
-
-// Substitua o alert do gameOver:
-function gameOver() {
-    const allCards = document.querySelectorAll(".item");
-    allCards.forEach(card => card.onclick = null);
-    showModal("GAME OVER 💀", "Que pena! O tempo acabou.");
-}
-
-// Substitua o alert da vitória no checkMatch:
-if (document.querySelectorAll(".boxMatch").length === emojis.length) {
+function endGame(isWin) {
     clearInterval(timerInterval);
-    showModal("VITÓRIA! 🏆", `Parabéns! Você terminou em ${60 - timeLeft} segundos.`);
+    
+    if (!isWin) {
+        document.querySelectorAll(".item").forEach(card => card.onclick = null);
+        return UI.showModal("GAME OVER 💀", "Que pena! O tempo acabou.");
+    }
+
+    if (gameMode === "desafio") {
+        const timeSpent = 60 - timeLeft;
+        const result = Storage.checkAndSaveRecord(timeSpent);
+        
+        const title = result.isNewRecord ? "NOVO RECORDE! 🏆" : "VITÓRIA! 🏁";
+        const msg = result.isNewRecord ? `Incrível! Melhor tempo: ${result.time}s.` : `Tempo: ${timeSpent}s. Recorde: ${result.record}s.`;
+        UI.showModal(title, msg);
+    } else {
+        UI.showModal("VITÓRIA! ✨", `Modo Casual concluído em ${secondsPassed}s.`);
+    }
 }
 
-})();
+// Inicializa o jogo
+init();

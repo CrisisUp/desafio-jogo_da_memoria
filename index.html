@@ -19,7 +19,7 @@
         </div>
 
         <div class="game"></div>
-        <button class="reset" onclick="window.location.reload()">RESET GAME</button>
+        <button class="reset">RESET GAME</button>
     </div>
 
     <div id="modal" class="modal">
@@ -30,7 +30,16 @@
         </div>
     </div>
 
-    <script src="./src/scripts/engine.js" defer></script>
+    <div id="start-modal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h2>ESCOLHA O MODO</h2>
+            <button class="mode-btn" id="btn-casual">CASUAL (Livre)</button>
+            <button class="mode-btn" id="btn-desafio">DESAFIO (60s)</button>
+            <p>Recorde atual: <span id="high-score">--:--</span></p>
+        </div>
+    </div>
+
+    <script src="./src/scripts/engine.js" type="module" defer></script>
 </body>
 
 </html>
