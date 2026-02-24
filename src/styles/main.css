@@ -26,7 +26,7 @@
     --btn-border-radius: 10px;
 
     /* Opacidades e Efeitos */
-    --card-opacity-normal: .6;
+    --card-opacity-normal: 1;
     --card-opacity-hard: 1;
     --card-bg-hard: rgba(255, 255, 255, 0.7);
     --modal-overlay: rgba(0, 0, 0, 0.8);
